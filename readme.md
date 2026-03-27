@@ -5,11 +5,14 @@
     (|     |)
      \_____/
 
-   __ __  __  __  __  __  ____  ____
-  / // / / / / /  \ \/ / / __/ /  _/
- / ,<   / /_/ /    \  / / _/  _/ /  
-/_/|_|  \____/     /_/ /_/   /___/  
-
+```diff
++    __ __  __  __  __  __  ____  ____
++   / // / / / / /  \ \/ / / __/ /  _/
++  / ,<   / /_/ /    \  / / _/  _/ /  
++ /_/|_|  \____/     /_/ /_/   /___/  
++                                     
++ CORE SECURITY MODULE                  
+```
 # Kuyfi Core - Security Terminal (TUI)
 
 Official Terminal User Interface (TUI) for real-time interaction and monitoring of the Kuyfi smart contract on the Stellar network (Soroban). This tool provides tactical telemetry, state reading, and visual auditing directly from the command line.
