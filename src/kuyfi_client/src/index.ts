@@ -34,7 +34,7 @@ if (typeof window !== "undefined") {
 export const networks = {
   testnet: {
     networkPassphrase: "Test SDF Network ; September 2015",
-    contractId: "CD7SXYR4QICJSKUVGA36JJVEEYJ3VR66CP6ULM5ZBIARA5X267GSKQF7",
+    contractId: "CAV2DLUWVABTEFGWBGJXROWMKNEFT5JJMRISRBRF7K666BQ4J3LFMLHO",
   }
 } as const
 
@@ -56,6 +56,11 @@ export interface Client {
    */
   withdraw: ({to, amount}: {to: string, amount: i128}, options?: MethodOptions) => Promise<AssembledTransaction<Result<void>>>
 
+  /**
+   * Construct and simulate a get_balance transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  get_balance: ({user}: {user: string}, options?: MethodOptions) => Promise<AssembledTransaction<i128>>
+
 }
 export class Client extends ContractClient {
   static async deploy<T = Client>(
@@ -76,12 +81,14 @@ export class Client extends ContractClient {
     super(
       new ContractSpec([ "AAAABAAAAAAAAAAAAAAACVBvb2xFcnJvcgAAAAAAAAQAAAAAAAAADU5vdEF1dGhvcml6ZWQAAAAAAAABAAAAAAAAABFJbnN1ZmZpY2llbnRGdW5kcwAAAAAAAAIAAAAAAAAADk5lZ2F0aXZlQW1vdW50AAAAAAADAAAAAAAAAAxNYXRoT3ZlcmZsb3cAAAAE",
         "AAAAAAAAAAAAAAAHZGVwb3NpdAAAAAACAAAAAAAAAARmcm9tAAAAEwAAAAAAAAAGYW1vdW50AAAAAAALAAAAAQAAA+kAAAACAAAH0AAAAAlQb29sRXJyb3IAAAA=",
-        "AAAAAAAAAAAAAAAId2l0aGRyYXcAAAACAAAAAAAAAAJ0bwAAAAAAEwAAAAAAAAAGYW1vdW50AAAAAAALAAAAAQAAA+kAAAACAAAH0AAAAAlQb29sRXJyb3IAAAA=" ]),
+        "AAAAAAAAAAAAAAAId2l0aGRyYXcAAAACAAAAAAAAAAJ0bwAAAAAAEwAAAAAAAAAGYW1vdW50AAAAAAALAAAAAQAAA+kAAAACAAAH0AAAAAlQb29sRXJyb3IAAAA=",
+        "AAAAAAAAAAAAAAALZ2V0X2JhbGFuY2UAAAAAAQAAAAAAAAAEdXNlcgAAABMAAAABAAAACw==" ]),
       options
     )
   }
   public readonly fromJSON = {
     deposit: this.txFromJSON<Result<void>>,
-        withdraw: this.txFromJSON<Result<void>>
+        withdraw: this.txFromJSON<Result<void>>,
+        get_balance: this.txFromJSON<i128>
   }
 }

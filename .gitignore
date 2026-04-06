@@ -1,2 +1,22 @@
-node_modules
-dist
+# Dependencias
+node_modules/
+
+# Salida de compilación TypeScript
+dist/
+
+# Registros y depuración de paquetes
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Variables de entorno y secretos (nunca versionar)
+.env
+.env.local
+.env.*
+!.env.example
+.secret
+*.secret
