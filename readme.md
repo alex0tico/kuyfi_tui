@@ -25,7 +25,7 @@ This project implements a modern Web3 architecture by separating the interface l
 * **Web3 Connectivity:** Implements auto-generated Soroban bindings and `stellar-sdk` to establish an RPC bridge with the Stellar Testnet.
 * **Asynchronous Telemetry:** Uses React hooks (`useState`, `useEffect`) to perform asynchronous, read-only queries (`get_balance`) to the smart contract's persistent storage, incurring no gas costs for the user.
 * **Strict Typing:** Built on TypeScript to ensure type safety in blockchain responses prior to rendering.
-
+* **SPA Terminal Navigation:** Implements a state-based router allowing seamless navigation between SecOps modules (OSINT Scanner, Chaos Monkey) without tearing down the Node.js process.
 ## Prerequisites
 
 To run this terminal in a local environment, you need:
@@ -58,8 +58,9 @@ cd ../..
 Once the client is compiled, you can launch the dashboard in your terminal by running the following command from the project root (`kuyfi_tui`):
 
 ```bash
-npm run build && node dist/cli.js
-```
+npm run dev
+# (In another terminal tab, run the interface with:)
+npm start```
 
 To exit the terminal and return to your standard command line, press `Ctrl + C`.
 
