@@ -2,12 +2,28 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Text, Box, useInput } from 'ink';
 import type { TextProps } from 'ink';
 import SelectInput from 'ink-select-input';
+import TextInput from 'ink-text-input';
+import Spinner from 'ink-spinner';
+import { rpc as SorobanRpc, xdr } from '@stellar/stellar-sdk';
 // @ts-ignore
 import * as KuyfiClient from '../src/kuyfi_client/dist/index.js';
 
-type ViewId = 'menu' | 'pool' | 'logs' | 'about';
+// Interfaz para ScannerView props
+interface ScannerViewProps {
+	contractId: string;
+	setContractId: React.Dispatch<React.SetStateAction<string>>;
+}
+
+interface ContractFunction {
+	name: string;
+	inputs: string;
+	outputs: string;
+}
+
+type ViewId = 'menu' | 'pool' | 'logs' | 'about' | 'scanner';
 
 const menuItems = [
+	{ label: '[1] Scanner OSINT', value: 'scanner' as const },
 	{ label: 'Pool / red (datos en vivo)', value: 'pool' as const },
 	{ label: 'Registros del sistema', value: 'logs' as const },
 	{ label: 'Acerca de', value: 'about' as const },
@@ -63,18 +79,200 @@ function ViewShell({
 	);
 }
 
-export default function App() {
+// ScannerView permite editar el contractId con validación en tiempo real
+function ScannerView({ contractId, setContractId }: ScannerViewProps) {
+	const [inputValue, setInputValue] = useState('');
+	const [inputError, setInputError] = useState<string>('');
+	const [isScanning, setIsScanning] = useState<boolean>(false);
+	const [bytecodeSize, setBytecodeSize] = useState<number | null>(null);
+	const [rpcError, setRpcError] = useState<string | null>(null);
+	const [functions, setFunctions] = useState<ContractFunction[]>([]);
+
+	// Valida y procesa el input cuando se presiona Enter
+	function onSubmit(newValue: string) {
+		const contractIdRegex = /^C[A-Z0-9]{55}$/;
+		if (!contractIdRegex.test(newValue)) {
+			setInputError('El Contract ID debe comenzar con "C" y tener exactamente 56 caracteres (A-Z, 0-9)');
+			return;
+		}
+		setInputError('');
+		setContractId(newValue);
+	}
+
+	useEffect(() => {
+		if (!contractId) {
+			setIsScanning(false);
+			setBytecodeSize(null);
+			setRpcError(null);
+			setFunctions([]);
+			return;
+		}
+
+		let cancelled = false;
+		const fetchContractBytecode = async () => {
+			setIsScanning(true);
+			setBytecodeSize(null);
+			setRpcError(null);
+			setFunctions([]);
+
+			try {
+				const server = new SorobanRpc.Server('https://soroban-testnet.stellar.org');
+				const wasmBytecode = await server.getContractWasmByContractId(contractId);
+
+				if (!wasmBytecode || wasmBytecode.length === 0) {
+					throw new Error('CONTRACT_NOT_FOUND');
+				}
+
+				const sizeInBytes = wasmBytecode.length;
+				const wasmModule = await WebAssembly.compile(Uint8Array.from(wasmBytecode));
+				const [specSection] = WebAssembly.Module.customSections(wasmModule, 'contractspecv0');
+
+				if (!specSection) {
+					throw new Error('XDR_ALIGN_FAILURE');
+				}
+
+				const buffer = Buffer.from(specSection);
+				let offset = 0;
+				const entries = [];
+				while (offset < buffer.length) {
+					let success = false;
+					// En XDR, cada bloque es obligatoriamente múltiplo de 4 bytes
+					for (let len = 4; len <= buffer.length - offset; len += 4) {
+						try {
+							const chunk = buffer.slice(offset, offset + len);
+							const entry = xdr.ScSpecEntry.fromXDR(chunk);
+							entries.push(entry);
+							offset += len; // Avanza el cursor exactamente lo que midió el objeto
+							success = true;
+							break;
+						} catch {
+							// Falla silenciosamente si el tamaño es incorrecto, intenta sumando 4 bytes más
+						}
+					}
+					if (!success) {
+						throw new Error('XDR_ALIGN_FAILURE');
+					}
+				}
+
+				// Filtrar solo las funciones y mapearlas para la UI
+				const parsedFunctions: ContractFunction[] = entries
+					.filter((e: any) => e.switch().name === 'scSpecEntryFunctionV0')
+					.map((e: any) => {
+						const func = e.functionV0();
+						return {
+							name: func.name().toString('utf-8'),
+							inputs: func.inputs().map((i: any) => i.name().toString('utf-8')).join(', '),
+							outputs: func.outputs().length > 0 ? 'Has Return' : 'Void',
+						};
+					});
+
+				if (!cancelled) {
+					setBytecodeSize(sizeInBytes);
+					setFunctions(parsedFunctions);
+				}
+			} catch (error: any) {
+				if (!cancelled) {
+					const rawMessage = String(error?.message || '').toLowerCase();
+					if (rawMessage.includes('fetch') || rawMessage.includes('network')) {
+						setRpcError('ERROR CRÍTICO: Sin conexión a la Testnet o RPC caído.');
+					} else if (
+						error?.message === 'CONTRACT_NOT_FOUND' ||
+						rawMessage.includes('404') ||
+						rawMessage.includes('not found') ||
+						rawMessage.includes('null')
+					) {
+						setRpcError(
+							'CONTRATO NO ENCONTRADO: Verifica que el Contract ID sea correcto y exista en la Testnet.',
+						);
+					} else if (error?.message === 'XDR_ALIGN_FAILURE') {
+						setRpcError(
+							'ERROR DE DECODIFICACIÓN: El WASM fue descargado, pero no contiene una sección contractspecv0 válida.',
+						);
+					} else {
+						setRpcError(error?.message || 'Error consultando Soroban RPC.');
+					}
+					setIsScanning(false);
+				}
+			} finally {
+				if (!cancelled) {
+					setIsScanning(false);
+				}
+			}
+		};
+
+		fetchContractBytecode();
+		return () => {
+			cancelled = true;
+		};
+	}, [contractId]);
+
+	return (
+		<Box flexDirection="column">
+			<Text color="cyan">[ScannerView]</Text>
+			{(!contractId || Boolean(rpcError)) && (
+				<>
+					<Text>Introduce el Contract ID (empieza con 'C', 56 caracteres):</Text>
+					<Text color="cyan">Ingrese Contract ID: </Text>
+					<TextInput
+						value={inputValue}
+						onChange={setInputValue}
+						onSubmit={onSubmit}
+						placeholder="C..."
+					/>
+					{inputError && (
+						<Text color="red" bold>
+							{inputError}
+						</Text>
+					)}
+				</>
+			)}
+			{isScanning && (
+				<Box>
+					<Text color="yellow">
+						<Spinner type="dots" /> Extrayendo bytecode desde Testnet...
+					</Text>
+				</Box>
+			)}
+			{rpcError && (
+				<Text color="red" bold>
+					{rpcError}
+				</Text>
+			)}
+			{bytecodeSize !== null && (
+				<Text color="green">
+					Reconocimiento exitoso. Tamaño del contrato: {bytecodeSize} bytes
+				</Text>
+			)}
+			{!isScanning && functions.length > 0 && (
+				<Box flexDirection="column" borderStyle="round" borderColor="cyan" padding={1}>
+					<Text color="cyan" bold>
+						🛡️ SUPERFICIE DE ATAQUE (Contract Spec)
+					</Text>
+					{functions.map(fn => (
+						<Box key={`${fn.name}:${fn.inputs}:${fn.outputs}`} flexDirection="row">
+							<Text color="magentaBright" bold>
+								{fn.name}
+							</Text>
+							<Text color="gray">({fn.inputs})</Text>
+							<Text color="greenBright"> -&gt; {fn.outputs}</Text>
+						</Box>
+					))}
+				</Box>
+			)}
+		</Box>
+	);
+}
+
+const App: React.FC = () => {
 	const [view, setView] = useState<ViewId>('menu');
 	const [status, setStatus] = useState('INITIALIZING WEB3 CONNECTION...');
 	const [poolBalance, setPoolBalance] = useState<string | null>(null);
 	const [lastError, setLastError] = useState<string | null>(null);
-	const [contractId] = useState(
-		'CAV2DLUWVABTEFGWBGJXROWMKNEFT5JJMRISRBRF7K666BQ4J3LFMLHO',
-	);
+	const [contractId, setContractId] = useState<string>('');
 
 	useEffect(() => {
-		if (view !== 'pool') {
-			return;
+		if (view !== 'pool' || !contractId) {
+			return undefined;
 		}
 
 		async function fetchOnChainData() {
@@ -107,6 +305,7 @@ export default function App() {
 					throw new Error(
 						`MÉTODOS ENCONTRADOS -> Prototipo: [${classMethods}] | Directos: [${directProps}]`,
 					);
+
 				}
 
 				const balanceFunc = client.get_balance || client.getBalance;
@@ -149,16 +348,24 @@ export default function App() {
 	if (view === 'menu') {
 		return (
 			<Box flexDirection="column" padding={1} borderStyle="round" borderColor="magenta">
-				<Box flexDirection="row" justifyContent="center" marginBottom={1}>
+				<Box
+					flexDirection="row"
+					justifyContent="center"
+					alignItems="center"
+					marginBottom={1}
+				>
 					<Box marginRight={4}>
 						<AsciiArt text={cyberCat} color="magentaBright" bold={false} />
 					</Box>
-					<Box flexDirection="column">
+					<Box flexDirection="column" alignItems="center">
 						<AsciiArt text={kuyfiLogo} color="magentaBright" bold />
 						<Text color="gray" dimColor>
 							{' '}
 							[ SECURITY TERMINAL v0.1 ]
 						</Text>
+					</Box>
+					<Box marginLeft={4}>
+						<AsciiArt text={cyberCat} color="magentaBright" bold={false} />
 					</Box>
 				</Box>
                 <Box marginBottom={1}>
@@ -179,16 +386,24 @@ export default function App() {
 	if (view === 'pool') {
 		return (
 			<ViewShell onBack={() => setView('menu')}>
-				<Box flexDirection="row" justifyContent="center" marginBottom={1}>
+				<Box
+					flexDirection="row"
+					justifyContent="center"
+					alignItems="center"
+					marginBottom={1}
+				>
 					<Box marginRight={4}>
 						<AsciiArt text={cyberCat} color="magentaBright" bold={false} />
 					</Box>
-					<Box flexDirection="column">
+					<Box flexDirection="column" alignItems="center">
 						<AsciiArt text={kuyfiLogo} color="magentaBright" bold />
 						<Text color="gray" dimColor>
 							{' '}
 							Vista: Pool / red
 						</Text>
+					</Box>
+					<Box marginLeft={4}>
+						<AsciiArt text={cyberCat} color="magentaBright" bold={false} />
 					</Box>
 				</Box>
 
@@ -239,6 +454,15 @@ export default function App() {
 			</ViewShell>
 		);
 	}
+	
+	// Añade el renderizado de ScannerView y pasa las props necesarias
+	if (view === 'scanner') {
+		return (
+			<ViewShell onBack={() => setView('menu')}>
+				<ScannerView contractId={contractId} setContractId={setContractId} />
+			</ViewShell>
+		);
+	}
 
 	if (view === 'logs') {
 		return (
@@ -279,4 +503,6 @@ export default function App() {
 			</Box>
 		</ViewShell>
 	);
-}
+};
+
+export default App;

@@ -20,6 +20,8 @@
 		"@stellar/stellar-sdk": "^14.6.1",
 		"ink": "^6.8.0",
 		"ink-select-input": "^6.2.0",
+		"ink-spinner": "^5.0.0",
+		"ink-text-input": "^6.0.0",
 		"meow": "^11.0.0",
 		"react": "^19.2.4"
 	},
