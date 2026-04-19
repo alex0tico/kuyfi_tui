@@ -7,53 +7,80 @@
      \_____/                  [ CORE SECURITY MODULE ]                   \_____/
 ```
 
-# Kuyfi Core - Security Terminal (TUI)
+# Küyfi Core — Security Terminal (TUI)
 
-Official Terminal User Interface (TUI) for real-time interaction and monitoring of the Kuyfi smart contract on the Stellar network (Soroban). This tool provides tactical telemetry, state reading, and visual auditing directly from the command line.
+Küyfi is the first black-box smart contract security scanner native to Soroban — no source code required.
 
-## The Impact in Web3 Security
+Most security tools (Veridise, Certora) require the original Rust source code. Küyfi works directly on deployed contracts by extracting and decoding WASM bytecode on-chain.
 
-In the Web3 ecosystem, smart contracts are immutable and often handle millions of dollars in value. However, security tools are usually complex or require access to the original source code.
+Think of Küyfi as an **audit readiness tool**: developers run it before paying for a formal audit so they reach Veridise or Ottersec without obvious, surface-level vulnerabilities.
 
-Kuyfi changes the game by acting as an offensive SecOps terminal directly from the CLI. It democratizes smart contract auditing on the Stellar network by allowing security researchers to map the attack surface of any deployed contract in real-time, extracting the WASM bytecode and decoding its XDR structure on the fly—without needing the original Rust code. It lays the groundwork for automated black-box testing and chaos engineering in Web3.
+![Network: Stellar Testnet](https://img.shields.io/badge/Network-Stellar%20Testnet-8B5CF6?style=flat-square)
+![Phase: OSINT Scanner v1.0](https://img.shields.io/badge/Phase-OSINT%20Scanner%20v1.0-C71585?style=flat-square)
+![Stack: TypeScript + Ink + Soroban SDK](https://img.shields.io/badge/Stack-TypeScript%20%2B%20Ink%20%2B%20Soroban%20SDK-2563EB?style=flat-square)
+![Status: Active Development](https://img.shields.io/badge/Status-Active%20Development-22C55E?style=flat-square)
+
+## Live Demo
+
+![Küyfi OSINT Scanner Demo](./docs/demo.gif)
+
+> Scanning a live AMM contract on Stellar Testnet — no source code needed.
+
+_Add `./docs/demo.gif` manually; the path is reserved for the screen recording._
 
 ## Current Capabilities (Phase 1: OSINT Scanner)
 
-The first active module of Kuyfi focuses on mapping the attack surface using purely on-chain data:
+The OSINT module maps the attack surface using purely on-chain data:
 
-- **WASM Extraction:** Connects to the Stellar RPC to pull the compiled `.wasm` binary of any valid Contract ID.
+- **WASM extraction:** Pulls the compiled `.wasm` binary for any valid Contract ID via Stellar RPC.
 
-- **XDR Telemetry:** Performs low-level memory fuzzing to decode the `contractspecv0` section directly from the buffer.
+- **XDR telemetry:** Decodes the `contractspecv0` section from the WASM buffer (including alignment-tolerant parsing where the stream has no explicit delimiters).
 
-- **Surface Mapping:** Visually renders the contract's endpoints, parsing all function names, expected inputs, and output types into an actionable, human-readable terminal table.
+- **Surface mapping:** Renders contract endpoints in the terminal—function names, inputs, and outputs in a readable layout.
 
 ## Architecture and Technical Concepts
 
-This project implements a modern Web3 architecture by separating the interface logic from the blockchain logic:
+This project separates terminal UI from chain access:
 
-- **Visual Engine (React + Ink):** Utilizes React to manage state and data lifecycles, rendering visual components directly in the standard terminal using the `ink` library.
+- **Visual engine (React + Ink):** React state and lifecycles; Ink renders in the terminal.
 
-- **Web3 Connectivity:** Implements auto-generated Soroban bindings and `stellar-sdk` to establish an RPC bridge with the Stellar Testnet.
+- **Web3 connectivity:** Auto-generated Soroban bindings and `stellar-sdk` for RPC against Stellar Testnet.
 
-- **SPA Terminal Navigation:** Implements a state-based router allowing seamless navigation between SecOps modules (OSINT Scanner, Chaos Monkey) without tearing down the Node.js process.
+- **SPA-style navigation:** State-based routing between SecOps modules (e.g. OSINT Scanner, Chaos Monkey) without restarting the Node process.
 
-- **Strict Typing:** Built on TypeScript to ensure type safety in blockchain responses prior to rendering.
+- **Strict typing:** TypeScript for safer handling of RPC and decoded data before render.
+
+## How Küyfi fits the Soroban ecosystem
+
+The **Soroban Audit Bank** (Veridise, Ottersec, CoinFabrik, and peers) delivers expert human audits—but those engagements typically expect source code and budget.
+
+Küyfi is the **missing layer before formal audits**: automated, **black-box**, and **CLI-native**, so you can profile a live contract the same way you would probe a closed binary.
+
+**Suggested workflow:** run Küyfi → fix obvious issues and shrink the attack surface → submit to the Audit Bank with a cleaner baseline and fewer trivial findings.
+
+## Roadmap
+
+- ✅ **Phase 1 — OSINT Scanner:** WASM extraction, XDR decoding, attack surface mapping **(COMPLETE)**
+
+- 🔨 **Phase 2 — Chaos Monkey:** Automated fuzzer. Math overflow injection, authorization bypass simulation, boundary value attacks against live Testnet contracts **(IN PROGRESS)**
+
+- 📋 **Phase 3 — Audit Reports:** Export findings as structured JSON/PDF for audit firms
 
 ## ⚙️ Prerequisites
 
-To run this terminal in a local environment, you need:
+To run this terminal locally you need:
 
 - Node.js (v18 or higher recommended)
 
 - npm (Node Package Manager)
 
-- Internet access for the RPC connection to the Stellar Testnet
+- Internet access for RPC to Stellar Testnet
 
 ## 🚀 Usage and Deployment Instructions
 
 ### 1. Installation
 
-Clone the repository and install the Node dependencies:
+Clone the repository and install dependencies:
 
 ```bash
 git clone https://github.com/alex0tico/kuyfi_tui.git
@@ -63,7 +90,7 @@ npm install
 
 ### 2. Web3 Client Configuration
 
-Before running the interface, it is necessary to build the auto-generated Soroban client so that Node.js can process the bindings:
+Build the auto-generated Soroban client so Node can load the bindings:
 
 ```bash
 cd src/kuyfi_client
@@ -74,12 +101,12 @@ cd ../..
 
 ### 3. Running the Terminal
 
-You can launch the dashboard in your terminal by running the following commands from the project root (`kuyfi_tui`):
+From the project root (`kuyfi_tui`):
 
 ```bash
 npm run dev
-# (In another terminal tab, run the interface with:)
+# In another terminal tab:
 npm start
 ```
 
-To exit the terminal and return to your standard command line, press `Esc` to return to the menu, or `Ctrl + C`.
+Press `Esc` to return to the menu, or `Ctrl + C` to exit.
