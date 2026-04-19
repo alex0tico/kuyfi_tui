@@ -22,11 +22,11 @@ Think of Kuyfi as an **audit readiness tool**: developers run it before paying f
 
 ## Live Demo
 
+Screen recording (GIF): [`docs/demo.gif`](./docs/demo.gif)
+
 ![Kuyfi OSINT Scanner Demo](./docs/demo.gif)
 
 > Scanning a live AMM contract on Stellar Testnet — no source code needed.
-
-_Add `./docs/demo.gif` manually; the path is reserved for the screen recording._
 
 ## Current Capabilities (Phase 1: OSINT Scanner)
 
