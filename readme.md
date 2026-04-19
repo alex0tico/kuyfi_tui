@@ -76,7 +76,7 @@ To run this terminal locally you need:
 
 - Internet access for RPC to Stellar Testnet
 
-## 🚀 Usage and Deployment Instructions
+## Usage and Deployment Instructions
 
 ### 1. Installation
 
