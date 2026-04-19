@@ -7,13 +7,13 @@
      \_____/                  [ CORE SECURITY MODULE ]                   \_____/
 ```
 
-# Küyfi Core — Security Terminal (TUI)
+# Kuyfi Core — Security Terminal (TUI)
 
-Küyfi is the first black-box smart contract security scanner native to Soroban — no source code required.
+Kuyfi is the first black-box smart contract security scanner native to Soroban — no source code required.
 
-Most security tools (Veridise, Certora) require the original Rust source code. Küyfi works directly on deployed contracts by extracting and decoding WASM bytecode on-chain.
+Most security tools (Veridise, Certora) require the original Rust source code. Kuyfi works directly on deployed contracts by extracting and decoding WASM bytecode on-chain.
 
-Think of Küyfi as an **audit readiness tool**: developers run it before paying for a formal audit so they reach Veridise or Ottersec without obvious, surface-level vulnerabilities.
+Think of Kuyfi as an **audit readiness tool**: developers run it before paying for a formal audit so they reach Veridise or Ottersec without obvious, surface-level vulnerabilities.
 
 ![Network: Stellar Testnet](https://img.shields.io/badge/Network-Stellar%20Testnet-8B5CF6?style=flat-square)
 ![Phase: OSINT Scanner v1.0](https://img.shields.io/badge/Phase-OSINT%20Scanner%20v1.0-C71585?style=flat-square)
@@ -22,7 +22,7 @@ Think of Küyfi as an **audit readiness tool**: developers run it before paying 
 
 ## Live Demo
 
-![Küyfi OSINT Scanner Demo](./docs/demo.gif)
+![Kuyfi OSINT Scanner Demo](./docs/demo.gif)
 
 > Scanning a live AMM contract on Stellar Testnet — no source code needed.
 
@@ -50,13 +50,13 @@ This project separates terminal UI from chain access:
 
 - **Strict typing:** TypeScript for safer handling of RPC and decoded data before render.
 
-## How Küyfi fits the Soroban ecosystem
+## How Kuyfi fits the Soroban ecosystem
 
 The **Soroban Audit Bank** (Veridise, Ottersec, CoinFabrik, and peers) delivers expert human audits—but those engagements typically expect source code and budget.
 
-Küyfi is the **missing layer before formal audits**: automated, **black-box**, and **CLI-native**, so you can profile a live contract the same way you would probe a closed binary.
+Kuyfi is the **missing layer before formal audits**: automated, **black-box**, and **CLI-native**, so you can profile a live contract the same way you would probe a closed binary.
 
-**Suggested workflow:** run Küyfi → fix obvious issues and shrink the attack surface → submit to the Audit Bank with a cleaner baseline and fewer trivial findings.
+**Suggested workflow:** run Kuyfi → fix obvious issues and shrink the attack surface → submit to the Audit Bank with a cleaner baseline and fewer trivial findings.
 
 ## Roadmap
 
