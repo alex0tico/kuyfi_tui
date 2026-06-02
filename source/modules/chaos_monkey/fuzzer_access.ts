@@ -3,6 +3,7 @@ import {rpc as SorobanRpc} from '@stellar/stellar-sdk';
 import {invokeContract} from './router.js';
 import {parseInvokeResult} from './result_parser.js';
 import {baseline} from './type_gen.js';
+import type {UdtRegistry} from './type_gen.js';
 import type {FuzzTarget, FuzzResult} from './fuzzer_math.js';
 
 const ADMIN_FUNCTION_PATTERNS = [
@@ -28,19 +29,15 @@ export function isAdminFunctionByName(name: string): boolean {
 /**
  * Runs access control attack vectors against admin functions.
  *
- * All arguments use type-correct values derived from the param spec —
- * no void/wrong-type args that would fail at the simulation type-check
- * level rather than the auth level.
- *
- * UNAUTHORIZED_CALL and REINIT_ATTACK are expected to fail on a secure
- * contract (auth rejection).  SELF_CALL_ATTACK is expected to fail because
- * the attacker's address is not the admin.
- * POTENTIAL_VULN is reported if any of these attacks succeeds.
+ * All arguments use type-correct values derived from the param spec,
+ * including UDT structs via the registry. This ensures failures happen
+ * at the auth level, not at type-parsing level.
  */
 export async function fuzzAccessVectors(
 	target: FuzzTarget,
 	keypair: Keypair,
 	server: SorobanRpc.Server,
+	registry: UdtRegistry,
 ): Promise<FuzzResult[]> {
 	const results: FuzzResult[] = [];
 	const fnName = target.functionName.toLowerCase();
@@ -49,7 +46,7 @@ export async function fuzzAccessVectors(
 
 	// 1. UNAUTHORIZED_CALL — call any admin function from a random (non-admin) keypair
 	if (isAdmin) {
-		const args = target.params.map(p => baseline(p.type));
+		const args = target.params.map(p => baseline(p.type, registry));
 		const raw = await invokeContract({
 			contractId: target.contractId,
 			functionName: target.functionName,
@@ -65,7 +62,7 @@ export async function fuzzAccessVectors(
 	// 2. REINIT_ATTACK — call init/setup on an already-initialised contract
 	const isReinit = REINIT_FUNCTION_PATTERNS.some(p => fnName.includes(p));
 	if (isReinit) {
-		const args = target.params.map(p => baseline(p.type));
+		const args = target.params.map(p => baseline(p.type, registry));
 		const raw = await invokeContract({
 			contractId: target.contractId,
 			functionName: target.functionName,
@@ -84,7 +81,7 @@ export async function fuzzAccessVectors(
 	if (isSelfCall) {
 		const args = target.params.map(p => {
 			const isAddr = (p.type as xdr.ScSpecTypeDef).switch().name === 'scSpecTypeAddress';
-			return isAddr ? attackerAddrVal : baseline(p.type);
+			return isAddr ? attackerAddrVal : baseline(p.type, registry);
 		});
 		const raw = await invokeContract({
 			contractId: target.contractId,

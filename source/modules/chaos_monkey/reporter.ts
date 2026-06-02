@@ -23,6 +23,7 @@ export interface ChaosReport {
 		medium: number;
 		low: number;
 		info: number;
+		preconditionFail: number;
 	};
 }
 
@@ -34,7 +35,7 @@ const SEVERITY_ORDER: Severity[] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO']
  * Assigns sequential IDs starting from KYF-001.
  */
 export function buildReport(contractId: string, results: FuzzResult[]): ChaosReport {
-	const summary = {critical: 0, high: 0, medium: 0, low: 0, info: 0};
+	const summary = {critical: 0, high: 0, medium: 0, low: 0, info: 0, preconditionFail: 0};
 	const uniqueFunctions = new Set(results.map(r => r.target.functionName));
 	const findings: Finding[] = [];
 	let findingIndex = 1;
@@ -53,14 +54,15 @@ export function buildReport(contractId: string, results: FuzzResult[]): ChaosRep
 				summary.medium++;
 				break;
 			case 'LOW':
-				summary.low++;
+				if (signal === 'PRECONDITION_FAIL') summary.preconditionFail++;
+				else summary.low++;
 				break;
 			case 'INFO':
 				summary.info++;
 				break;
 		}
 
-		if (signal !== 'SECURE') {
+		if (signal !== 'SECURE' && signal !== 'PRECONDITION_FAIL') {
 			const id = `KYF-${String(findingIndex).padStart(3, '0')}`;
 			findingIndex++;
 			findings.push({
@@ -105,11 +107,12 @@ export function formatReportForTerminal(report: ChaosReport): string {
 	lines.push(`  Functions: ${report.totalFunctions}  |  Vectors run: ${report.totalVectorsRun}`);
 	lines.push(SEP);
 	lines.push('  SUMMARY');
-	lines.push(`    CRITICAL : ${report.summary.critical}`);
-	lines.push(`    HIGH     : ${report.summary.high}`);
-	lines.push(`    MEDIUM   : ${report.summary.medium}`);
-	lines.push(`    LOW      : ${report.summary.low}`);
-	lines.push(`    INFO     : ${report.summary.info}`);
+	lines.push(`    CRITICAL         : ${report.summary.critical}`);
+	lines.push(`    HIGH             : ${report.summary.high}`);
+	lines.push(`    MEDIUM           : ${report.summary.medium}`);
+	lines.push(`    LOW              : ${report.summary.low}`);
+	lines.push(`    PRECONDITION_FAIL: ${report.summary.preconditionFail}`);
+	lines.push(`    INFO             : ${report.summary.info}`);
 	lines.push(SEP);
 
 	if (report.findings.length === 0) {

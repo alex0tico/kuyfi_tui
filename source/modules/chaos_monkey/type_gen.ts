@@ -3,6 +3,18 @@ import {Address, Keypair, xdr} from '@stellar/stellar-sdk';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyTypeDef = any;
 
+export interface UdtField {
+	name: string;
+	type: AnyTypeDef; // xdr.ScSpecTypeDef
+}
+
+/**
+ * Registry of UDT struct definitions keyed by struct name.
+ * Populated from scSpecEntryUdtStructV0 entries in the contract spec.
+ * Used by baseline() and attackVals() to build valid struct ScVals.
+ */
+export type UdtRegistry = Map<string, UdtField[]>;
+
 export function typeName(t: AnyTypeDef): string {
 	const n: string = t.switch().name;
 	switch (n) {
@@ -28,7 +40,12 @@ export function typeName(t: AnyTypeDef): string {
 	}
 }
 
-export function baseline(t: AnyTypeDef): xdr.ScVal {
+/**
+ * Builds a baseline (safe, type-correct, all-zeros-ish) ScVal for a given type.
+ * For UDT structs, constructs a ScVal::Map using the registry.
+ * Recursive: handles Vec<UDT>, Option<UDT>, etc.
+ */
+export function baseline(t: AnyTypeDef, registry: UdtRegistry = new Map()): xdr.ScVal {
 	const n: string = t.switch().name;
 	switch (n) {
 		case 'scSpecTypeU32':
@@ -89,17 +106,45 @@ export function baseline(t: AnyTypeDef): xdr.ScVal {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 			return xdr.ScVal.scvBytes(Buffer.alloc(t.bytesN().n() as number));
 		case 'scSpecTypeVec':
-			return xdr.ScVal.scvVec([]);
+			return xdr.ScVal.scvVec([baseline(t.vec().elementType(), registry)]);
 		case 'scSpecTypeMap':
 			return xdr.ScVal.scvMap([]);
 		case 'scSpecTypeOption':
 			return xdr.ScVal.scvVoid();
 		case 'scSpecTypeVoid':
 			return xdr.ScVal.scvVoid();
-		// UDT, Result, Tuple — skip; struct layout not derivable from spec entry alone
+		case 'scSpecTypeUdt': {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+			const udtName = (t.udt().name() as Buffer).toString('utf-8');
+			const fields = registry.get(udtName);
+			if (fields) {
+				return buildStructScVal(fields, registry);
+			}
+
+			// Unknown UDT (union, enum, or unregistered) — void is the safest fallback
+			return xdr.ScVal.scvVoid();
+		}
+
+		// Result, Tuple — layout not derivable without full schema
 		default:
 			return xdr.ScVal.scvVoid();
 	}
+}
+
+/**
+ * Constructs a ScVal::Map representing a Soroban struct.
+ * Entries are sorted lexicographically by field name, as Soroban requires.
+ */
+function buildStructScVal(fields: UdtField[], registry: UdtRegistry): xdr.ScVal {
+	const sorted = [...fields].sort((a, b) => a.name.localeCompare(b.name));
+	const entries = sorted.map(
+		f =>
+			new xdr.ScMapEntry({
+				key: xdr.ScVal.scvSymbol(f.name),
+				val: baseline(f.type, registry),
+			}),
+	);
+	return xdr.ScVal.scvMap(entries);
 }
 
 export interface AttackVector {
@@ -107,7 +152,12 @@ export interface AttackVector {
 	val: xdr.ScVal;
 }
 
-export function attackVals(t: AnyTypeDef): AttackVector[] {
+/**
+ * Generates type-correct attack ScVals for a given parameter type.
+ * For Vec<UDT>, uses real struct instances (via registry) instead of Void elements.
+ * Vec vectors are kept small (empty + one-element) to avoid oversized transactions.
+ */
+export function attackVals(t: AnyTypeDef, registry: UdtRegistry = new Map()): AttackVector[] {
 	const n: string = t.switch().name;
 	switch (n) {
 		case 'scSpecTypeU32':
@@ -238,20 +288,20 @@ export function attackVals(t: AnyTypeDef): AttackVector[] {
 		}
 
 		case 'scSpecTypeVec': {
-			const elemBaseline = baseline(t.vec().elementType());
+			const elemType = t.vec().elementType();
+			const elemBase = baseline(elemType, registry);
 			return [
 				{name: 'EMPTY_VEC', val: xdr.ScVal.scvVec([])},
-				{
-					name: 'LARGE_VEC',
-					val: xdr.ScVal.scvVec(Array.from({length: 64}, () => elemBaseline)),
-				},
+				// ONE_ELEM uses a real struct instance (or primitive baseline) — no more Void elements
+				{name: 'ONE_ELEM_VEC', val: xdr.ScVal.scvVec([elemBase])},
+				{name: 'TWO_ELEM_VEC', val: xdr.ScVal.scvVec([elemBase, elemBase])},
 			];
 		}
 
 		case 'scSpecTypeOption':
 			return [
 				{name: 'NONE', val: xdr.ScVal.scvVoid()},
-				{name: 'SOME_BASELINE', val: baseline(t.option().valueType())},
+				{name: 'SOME_BASELINE', val: baseline(t.option().valueType(), registry)},
 			];
 		case 'scSpecTypeTimepoint':
 			return [
@@ -263,7 +313,7 @@ export function attackVals(t: AnyTypeDef): AttackVector[] {
 				{name: 'ZERO_DUR', val: xdr.ScVal.scvDuration(xdr.Uint64.fromString('0'))},
 				{name: 'MAX_DUR', val: xdr.ScVal.scvDuration(xdr.Uint64.fromString('18446744073709551615'))},
 			];
-		// UDT, Result, Map, Tuple — struct layout unknown from spec entry alone
+		// UDT direct, Result, Map, Tuple — skip; these are used as Vec elements via baseline(), not fuzzed directly
 		default:
 			return [];
 	}

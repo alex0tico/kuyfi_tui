@@ -4,6 +4,7 @@ import {fuzzMathVectors} from './fuzzer_math.js';
 import {fuzzAccessVectors, isAdminFunctionByName} from './fuzzer_access.js';
 import {buildReport} from './reporter.js';
 import type {FuzzTarget, FuzzResult} from './fuzzer_math.js';
+import type {UdtRegistry} from './type_gen.js';
 import type {ChaosReport} from './reporter.js';
 
 export type {ChaosReport} from './reporter.js';
@@ -11,6 +12,7 @@ export type {Finding} from './reporter.js';
 export {formatReportForTerminal} from './reporter.js';
 export type {FuzzResult} from './fuzzer_math.js';
 export type {ParsedResult} from './result_parser.js';
+export type {UdtRegistry, UdtField} from './type_gen.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyTypeDef = any;
@@ -23,6 +25,11 @@ export interface ChaosMonkeyOptions {
 		name: string;
 		params: Array<{name: string; type: AnyTypeDef}>;
 	}>;
+	/**
+	 * UDT struct registry built from scSpecEntryUdtStructV0 entries.
+	 * Used to construct valid struct ScVals for Vec<UDT> parameters.
+	 */
+	udtRegistry: UdtRegistry;
 	onProgress: (message: string) => void;
 }
 
@@ -35,7 +42,7 @@ export interface ChaosMonkeyOptions {
  * 4. Builds and returns the final ChaosReport
  */
 export async function runChaosMonkey(options: ChaosMonkeyOptions): Promise<ChaosReport> {
-	const {contractId, functions, onProgress} = options;
+	const {contractId, functions, udtRegistry, onProgress} = options;
 
 	onProgress('Generating ephemeral keypair...');
 	const keypair = await generateEphemeralKeypair();
@@ -55,14 +62,9 @@ export async function runChaosMonkey(options: ChaosMonkeyOptions): Promise<Chaos
 			isAdminFunction: isAdminFunctionByName(fn.name),
 		};
 
-		const fuzzableParams = fn.params.filter(p => {
-			const tname: string = p.type.switch().name;
-			return !['scSpecTypeUdt', 'scSpecTypeResult', 'scSpecTypeTuple', 'scSpecTypeMap'].includes(tname);
-		});
-
-		onProgress(`[${fn.name}] Running math vectors (${fuzzableParams.length} fuzzable params)...`);
+		onProgress(`[${fn.name}] Running math vectors (${fn.params.length} params)...`);
 		try {
-			const mathResults = await fuzzMathVectors(target, keypair, server);
+			const mathResults = await fuzzMathVectors(target, keypair, server, udtRegistry);
 			allResults.push(...mathResults);
 			onProgress(`[${fn.name}] Math done (${mathResults.length} invocations)`);
 		} catch (error) {
@@ -74,7 +76,7 @@ export async function runChaosMonkey(options: ChaosMonkeyOptions): Promise<Chaos
 		if (target.isAdminFunction) {
 			onProgress(`[${fn.name}] Running access control vectors...`);
 			try {
-				const accessResults = await fuzzAccessVectors(target, keypair, server);
+				const accessResults = await fuzzAccessVectors(target, keypair, server, udtRegistry);
 				allResults.push(...accessResults);
 				onProgress(`[${fn.name}] Access done (${accessResults.length} invocations)`);
 			} catch (error) {
