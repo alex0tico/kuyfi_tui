@@ -1,8 +1,24 @@
+# System files
+.DS_Store
+Thumbs.db
+
+# Editor folders
+.vscode/
+.idea/
+*.swp
+*~
+
 # Dependencias
 node_modules/
 
 # Salida de compilación TypeScript
 dist/
+*.tsbuildinfo
+
+# Cachés y artefactos de paquete
+.cache/
+.parcel-cache/
+coverage/
 
 # Registros y depuración de paquetes
 logs/
@@ -12,6 +28,11 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+
+# Source video files (do not version; docs/demo.gif is the published artifact)
+*.mov
+grabacion.mov
+Kuyfi_GIF.mov
 
 # Variables de entorno y secretos (nunca versionar)
 .env
