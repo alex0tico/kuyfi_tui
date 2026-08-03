@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+
+  <!-- SEO -->
+  <title>Kuyfi — Black-Box Security Scanner for Soroban</title>
+  <meta name="description" content="Native black-box security for Soroban — audit any deployed Stellar smart contract straight from its bytecode. No source code required. MIT · Testnet · v0.0.0" />
+
+  <!-- Open Graph (social preview: fox-gold-on-purple, Mesa_de_trabajo_5_3.svg)
+       TODO: replace OG_IMAGE_URL with absolute URL before deploy -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="Kuyfi — Black-Box Security for Soroban" />
+  <meta property="og:description" content="Audit any deployed Stellar smart contract straight from its bytecode. No source code required." />
+  <meta property="og:image"       content="TODO_ABSOLUTE_URL/assets/og/fox-gold-on-purple.svg" />
+  <meta property="og:url"         content="TODO_ABSOLUTE_URL" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Kuyfi — Black-Box Security for Soroban" />
+  <meta name="twitter:description" content="Audit any deployed Stellar smart contract straight from its bytecode. No source code required." />
+  <meta name="twitter:image"       content="TODO_ABSOLUTE_URL/assets/og/fox-gold-on-purple.svg" />
+
+  <!-- Favicon: monochrome fox SVG, currentColor = #EBB700 on dark backgrounds -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1080 1080'%3E%3Crect fill='%230E1113' width='1080' height='1080'/%3E%3Cg fill='%23EBB700'%3E%3Cpath d='M724.54,928.72c0,.33,0,.65-.03.97h-104.29l-33.97-99.34-21.77-63.64c14.68-11.83,24.07-29.95,24.07-50.28,0-35.26-28.26-63.89-63.36-64.55h-.3c-.31-.01-.61-.01-.92-.01-35.66,0-64.56,28.9-64.56,64.56,0,21.08,10.1,39.82,25.75,51.59l-21.5,62.85-19.6,57.28c17,5.65,29.26,21.69,29.26,40.58,0,.33,0,.65-.03.97h-121.22l43.94-128.48c-65.91-42.23-109.58-116.1-109.58-200.17,0-22.78,3.22-44.81,9.21-65.67l-.03.04c-43.49-42.53-70.49-101.87-70.49-167.52s24.9-120.33,65.44-162.45h.02c16.67-14.24,29.33-25.11,36.89-31.22,1.24-1,3.88-3.21,5.29-6.97,3.14-8.39-2.76-16.16-3.21-16.74,2.41-.24,4.71-.26,6.88-.11,25.97,1.73,43.04,27.67,48.27,36.35,1.53-2.11,3.93-6.04,4.7-11.47,1.45-10.2-3.97-17.86-5.27-19.61,4.38,2.88,21.41,14.8,27.62,37.99,5.14,19.2-.11,35.04-2.23,40.55,1.42-1.48,2.9-3.26,4.29-5.4,4.37-6.73,5.56-13.49,5.91-17.72,1.24,16.35-2.57,27.16-6.05,33.82-3.17,6.05-6.21,8.9-23.27,29.11-5.27,6.24-9.54,11.36-12.3,14.69v.02c-30.44,39.54-48.56,89.08-48.56,142.85,0,10.27.65,20.37,1.93,30.28l-.02.04c15.47-20.52,55.01-66.94,122.76-87.99,12.98-4.03,38.46-10.7,69.76-10.42,95.38.87,162.46,65.56,180.89,84.6,2.34-5.44,4.6-11.79,6.36-18.99.77-3.15,1.37-6.18,1.84-9.07,5.82,8.36,13.56,21.73,17.98,39.64,2.97,12.02,3.59,22.67,3.43,30.86,1.48-3.69,2.94-7.72,4.28-12.07,1.72-5.6,2.99-10.89,3.93-15.73,2.24,6.64,4.32,13.98,6.01,21.97,4.06,19.14,4.73,36.33,4.09,50.28,1.8-3.73,3.61-8.03,5.22-12.88,1.33-4.01,2.33-7.78,3.08-11.24,2.65,5.57,8.25,19.35,5.21,36.48-1.5,8.44-4.62,15.02-7.24,19.46-9.45-7.82-18.89-15.63-28.34-23.45l-8.81-7.3-4.92,10.33-19.63,41.17c-1.19.8-2.33,1.62-3.43,2.45-3.7,2.76-7.24,5.82-10.51,9.09-10.15,10.16-17.86,22.3-22.66,35.63-.22-.22-.46-.45-.68-.67-1.35-1.37-2.33-2.51-3.45-3.83l-.06-.06c-1.12-1.32-2.2-2.69-3.24-4.07l-26.86-35.81,8.25,32.24-11.71-16.3,6.24,26.67-7.44-9.96,12.32,45.23c1.38,5.05,3.12,10.06,5.17,14.87,12.87,30.3,35.48,47.04,45.14,54.19,7.89,5.84,15.78,10.52,23.33,14.26-15.41,18.83-33.67,35.23-54.1,48.57l26.95,78.78,2.44,7.1c23.03.7,41.47,19.58,41.47,42.76Z'/%3E%3C/g%3E%3C/svg%3E" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- Inline SVG Symbols: fox prowler (monochrome, fill:currentColor)
+       Extracted from Mesa de trabajo 5 copia.svg (white fox on black).
+       Paths stripped of fill class → inherits color from CSS.
+       Use as: <svg><use href="#fox-prowler"/></svg>
+       Color is set via `color` CSS property on the parent element. -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <symbol id="fox-prowler" viewBox="0 0 1080 1080">
+      <g fill="currentColor">
+        <path d="M724.54,928.72c0,.33,0,.65-.03.97h-104.29l-33.97-99.34-21.77-63.64c14.68-11.83,24.07-29.95,24.07-50.28,0-35.26-28.26-63.89-63.36-64.55h-.3c-.31-.01-.61-.01-.92-.01-35.66,0-64.56,28.9-64.56,64.56,0,21.08,10.1,39.82,25.75,51.59l-21.5,62.85-19.6,57.28c17,5.65,29.26,21.69,29.26,40.58,0,.33,0,.65-.03.97h-121.22l43.94-128.48c-65.91-42.23-109.58-116.1-109.58-200.17,0-22.78,3.22-44.81,9.21-65.67l-.03.04c-43.49-42.53-70.49-101.87-70.49-167.52s24.9-120.33,65.44-162.45h.02c16.67-14.24,29.33-25.11,36.89-31.22,1.24-1,3.88-3.21,5.29-6.97,3.14-8.39-2.76-16.16-3.21-16.74,2.41-.24,4.71-.26,6.88-.11,25.97,1.73,43.04,27.67,48.27,36.35,1.53-2.11,3.93-6.04,4.7-11.47,1.45-10.2-3.97-17.86-5.27-19.61,4.38,2.88,21.41,14.8,27.62,37.99,5.14,19.2-.11,35.04-2.23,40.55,1.42-1.48,2.9-3.26,4.29-5.4,4.37-6.73,5.56-13.49,5.91-17.72,1.24,16.35-2.57,27.16-6.05,33.82-3.17,6.05-6.21,8.9-23.27,29.11-5.27,6.24-9.54,11.36-12.3,14.69v.02c-30.44,39.54-48.56,89.08-48.56,142.85,0,10.27.65,20.37,1.93,30.28l-.02.04c15.47-20.52,55.01-66.94,122.76-87.99,12.98-4.03,38.46-10.7,69.76-10.42,95.38.87,162.46,65.56,180.89,84.6,2.34-5.44,4.6-11.79,6.36-18.99.77-3.15,1.37-6.18,1.84-9.07,5.82,8.36,13.56,21.73,17.98,39.64,2.97,12.02,3.59,22.67,3.43,30.86,1.48-3.69,2.94-7.72,4.28-12.07,1.72-5.6,2.99-10.89,3.93-15.73,2.24,6.64,4.32,13.98,6.01,21.97,4.06,19.14,4.73,36.33,4.09,50.28,1.8-3.73,3.61-8.03,5.22-12.88,1.33-4.01,2.33-7.78,3.08-11.24,2.65,5.57,8.25,19.35,5.21,36.48-1.5,8.44-4.62,15.02-7.24,19.46-9.45-7.82-18.89-15.63-28.34-23.45l-8.81-7.3-4.92,10.33-19.63,41.17c-1.19.8-2.33,1.62-3.43,2.45-3.7,2.76-7.24,5.82-10.51,9.09-10.15,10.16-17.86,22.3-22.66,35.63-.22-.22-.46-.45-.68-.67-1.35-1.37-2.33-2.51-3.45-3.83l-.06-.06c-1.12-1.32-2.2-2.69-3.24-4.07l-26.86-35.81,8.25,32.24-11.71-16.3,6.24,26.67-7.44-9.96,12.32,45.23c1.38,5.05,3.12,10.06,5.17,14.87,12.87,30.3,35.48,47.04,45.14,54.19,7.89,5.84,15.78,10.52,23.33,14.26-15.41,18.83-33.67,35.23-54.1,48.57l26.95,78.78,2.44,7.1c23.03.7,41.47,19.58,41.47,42.76Z"/>
+        <path d="M824.79,727.73c2.67-.36,5.56-.9,8.61-1.68,2.04-.52,4.15-1.15,6.31-1.91,5.35-1.89,9.85-4.15,13.46-6.29-1.44.21-3.37.45-5.68.64-1.4.12-2.75.24-4.33.29-.53.02-1.08.03-1.66.03-4.29,0-8.47-.5-12.49-1.4-.84-.19-1.69-.37-2.51-.59,7.35-11.24,12.2-24.27,13.76-38.3.36-3.24.55-6.53.55-9.86,0-2.23-.09-4.44-.25-6.62-.15-2.01-.37-4.01-.65-5.98-.28-2.05-.65-4.07-1.08-6.08l16.05-45.3-45.99-4.34c-1.74-1.47-3.52-2.86-5.35-4.18-1.82-1.31-3.69-2.55-5.58-3.71-1.28-.78-2.58-1.51-3.89-2.22-10.34-5.61-21.56-9.01-32.97-10.17l-.4-.33-.14-.12-1.98-1.63-33.54-27.76-8.79,18.43-11.91,24.96c-1.72,1.11-3.4,2.29-5.05,3.54-.6.45-1.2.91-1.79,1.38-.91.72-1.81,1.45-2.7,2.21-1.74,1.48-3.43,3.03-5.06,4.68-.87.87-1.71,1.75-2.53,2.65-11.11,12.06-18.25,26.46-21.4,41.53-4.29-2.47-8.35-5.54-12.02-9.21-1.18-1.18-2.11-2.21-2.98-3.23-.34-.4-.68-.8-1.03-1.21-.55-.65-1.05-1.26-1.53-1.85-.79-.98-1.48-1.88-2.04-2.62.78,3.05,1.87,6.51,3.4,10.2.51,1.23,1.07,2.49,1.68,3.77,3.47,7.24,7.6,12.87,11.2,17,.51.59,1.02,1.15,1.51,1.68-.94-.32-1.99-.71-3.12-1.19-1.13-.48-2.34-1.05-3.61-1.72-.63-.34-1.28-.7-1.93-1.09-1.84-1.09-3.75-2.43-5.66-4.01-.14-.11-.27-.21-.41-.33-3.25-2.76-5.65-5.6-7.37-7.99.74,3.16,1.67,5.91,2.62,8.25.48,1.17.96,2.24,1.43,3.2.47.97.93,1.83,1.36,2.59.86,1.53,1.73,2.89,2.68,4.23.2.28.4.56.6.84,1.73,2.36,3.74,4.73,6.42,7.88,1.71,2.01,3.32,3.8,4.77,5.36,1.4,1.51,2.64,2.79,3.66,3.83-1.57-.46-3.35-1.09-5.23-1.95-.63-.29-1.26-.6-1.91-.94-2.02-1.07-4.1-2.42-6.14-4.12-.56-.47-1.12-.95-1.67-1.48-1.14-1.08-2.16-2.25-2.61-2.77-.15-.17-.23-.27-.23-.27-1.63-2.18-3.27-4.37-4.9-6.57.07.26.15.54.23.82.92,3.3,2.35,7.78,4.54,12.93,6.57,15.45,15.85,27.07,24.54,35.65,0,0,.02.02.03.03,2,1.97,3.97,3.78,5.87,5.44,4.52,3.95,8.64,7.04,11.8,9.39,7.05,5.23,14.09,9.43,20.79,12.82.44.22.88.45,1.32.67.53.27,1.05.54,1.58.77,6.91,3.33,13.4,5.79,19.09,7.62,1.9.61,3.71,1.15,5.42,1.62,1.71.48,3.31.89,4.8,1.25.75.18,1.46.34,2.15.5,3.43.77,6.09,1.22,7.77,1.48,1.41.22,3.03.47,4.83.71,5.01.68,11.44,1.35,18.88,1.35,6,0,12.64-.43,19.69-1.63.88-.15,1.77-.31,2.66-.49,6.26-1.23,12.82-3.08,19.51-5.78,5.6-2.26,10.06-4.62,13.08-6.34-1.73.25-3.45.5-5.18.75-.97.14-1.94.28-2.92.42,0,0-.41.04-1.04.08-.16.01-.33.02-.52.03-.55.03-1.21.05-1.89.05-.23,0-.46-.01-.68-.01,0,0-.02,0-.03,0-7.03-.16-12.73-2.48-16.57-4.56,1.11-.01,2.41-.03,3.87-.08.49-.01.99-.03,1.52-.05,2.09-.08,4.46-.21,7.05-.42,1.73-.14,3.29-.26,4.73-.39,3.08-.28,5.61-.59,8.17-1.13,1.03-.22,2.06-.46,3.14-.76.56-.16,1.18-.35,1.83-.56,3.19-1.02,7.33-2.7,11.91-5.55-1.03.17-2.15.32-3.36.43-.61.05-1.23.1-1.88.12-.65.03-1.32.04-2,.04-.58,0-1.17-.01-1.77-.04-.6-.02-1.21-.06-1.84-.11-.09,0-.17-.02-.26-.03-5.87-.51-10.67-2.1-14.15-3.62-.68-.3-1.34-.6-1.92-.88,1.44-.06,3.01-.16,4.68-.33.84-.08,1.7-.19,2.59-.3ZM726.82,666.72c-3.6-1.63-3.89-8.73-.66-15.85,3.23-7.13,8.76-11.58,12.36-9.95,3.6,1.63,3.89,8.73.66,15.85-3.23,7.13-8.76,11.58-12.36,9.95ZM751.09,688.76c-1.94.62-3.86,1.25-5.76,1.88-.37-1.45-.81-2.97-1.34-4.56-1.01-2.99-2.15-5.65-3.31-7.96.96-.32,6.12-1.95,11.52.8,4.5,2.3,6.36,6.2,6.85,7.35-2.63.8-5.29,1.63-7.96,2.49ZM790.82,679.51c-3.23,7.13-8.76,11.58-12.36,9.95-3.6-1.63-3.89-8.73-.66-15.85,3.23-7.13,8.76-11.58,12.36-9.95,3.6,1.63,3.89,8.73.66,15.85Z"/>
+        <path d="M715.3,756.34c-7.2,7.64-15.17,15.57-23.96,23.61-9.14,8.37-18.08,15.88-26.63,22.59,4.61,12.92,9.22,25.85,13.82,38.77,26.06-4.9,52.12-9.8,78.18-14.7l14.89,34.9c1.5-.78,23.86-12.87,26.06-38.16,1.64-18.89-8.64-37.32-26.06-46.54l-56.31-20.48Z"/>
+      </g>
+    </symbol>
+  </svg>
+</head>
+<body>
+
+<!-- Skip link for keyboard navigation -->
+<a id="skip-link" href="#main-content">Skip to main content</a>
+
+<!-- ═══════════════════════════════════════════════════════
+     NAV
+═══════════════════════════════════════════════════════ -->
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <a href="#" class="nav__logo" aria-label="Kuyfi home">
+    <svg class="nav__logo-icon" aria-hidden="true" viewBox="0 0 1080 1080">
+      <use href="#fox-prowler"/>
+    </svg>
+    <span class="nav__wordmark">Kuyfi</span>
+  </a>
+
+  <ul class="nav__links" role="list">
+    <li><a href="#how-it-works">How it works</a></li>
+    <li><a href="#proof">Proof</a></li>
+    <li><a href="#open-core">Open-core</a></li>
+  </ul>
+
+  <a href="#waitlist" class="nav__cta">Join Waitlist</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════
+     MARQUEE
+═══════════════════════════════════════════════════════ -->
+<div class="marquee-strip" aria-hidden="true" role="marquee">
+  <div class="marquee-track">
+    <span class="marquee-item"><span>▸</span>contractspecv0</span>
+    <span class="marquee-item"><span>▸</span>scSpecEntryUdtStructV0</span>
+    <span class="marquee-item"><span>▸</span>KYF-001 · CRITICAL</span>
+    <span class="marquee-item"><span>▸</span>UNAUTHORIZED_CALL</span>
+    <span class="marquee-item"><span>▸</span>REINIT_ATTACK</span>
+    <span class="marquee-item"><span>▸</span>SELF_CALL_ATTACK</span>
+    <span class="marquee-item"><span>▸</span>WASM bytecode</span>
+    <span class="marquee-item"><span>▸</span>XDR decode</span>
+    <span class="marquee-item"><span>▸</span>simulate → assemble → sign → submit → poll</span>
+    <span class="marquee-item"><span>▸</span>ZERO_ATTACK</span>
+    <span class="marquee-item"><span>▸</span>MAX_VALUE_ATTACK</span>
+    <span class="marquee-item"><span>▸</span>MIN_BOUNDARY_ATTACK</span>
+    <span class="marquee-item"><span>▸</span>attack surface map</span>
+    <span class="marquee-item"><span>▸</span>ephemeral keypair</span>
+    <span class="marquee-item"><span>▸</span>Friendbot</span>
+    <span class="marquee-item"><span>▸</span>POTENTIAL_VULN</span>
+    <span class="marquee-item"><span>▸</span>VulnerabilitySignal</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════════════════ -->
+<main id="main-content">
+<section class="hero section" aria-labelledby="hero-headline">
+  <div class="hero__bg-grid" aria-hidden="true"></div>
+
+  <!-- Prowler parallax — desktop only, decorative -->
+  <div class="prowler-scene" aria-hidden="true">
+    <svg class="prowler-svg" viewBox="0 0 1080 1080" role="img" aria-label="Kuyfi fox prowler">
+      <use href="#fox-prowler"/>
+    </svg>
+    <div class="prowler-glyphs">
+      <span class="glyph">contractspecv0</span>
+      <span class="glyph">KYF-001 · CRITICAL</span>
+      <span class="glyph">UNAUTHORIZED_CALL</span>
+      <span class="glyph">WASM · 21KB</span>
+      <span class="glyph">scSpecEntryUdtStructV0</span>
+      <span class="glyph">simulate → sign → submit</span>
+      <span class="glyph">REINIT_ATTACK</span>
+      <span class="glyph">MAX_VALUE_ATTACK</span>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="hero__content">
+
+      <div class="hero__badges" role="list" aria-label="Project status">
+        <span class="badge badge--stable" role="listitem">
+          <span class="badge__dot" aria-hidden="true"></span>
+          Phase 1: OSINT Scanner — Stable
+        </span>
+        <span class="badge badge--beta" role="listitem">
+          <span class="badge__dot" aria-hidden="true"></span>
+          Phase 2: Chaos Monkey — Beta
+        </span>
+        <span class="badge badge--network" role="listitem">
+          Stellar Testnet · MIT · v0.0.0
+        </span>
+      </div>
+
+      <h1 class="hero__headline" id="hero-headline">
+        Native black-box security for <em>Soroban</em>
+      </h1>
+
+      <p class="hero__sub">
+        Audit any deployed Stellar smart contract straight from its bytecode.
+        No source code required.
+      </p>
+
+      <!-- Inline waitlist form -->
+      <form class="hero__form email-form" data-waitlist-form aria-label="Early access waitlist">
+        <label for="hero-email" class="visually-hidden">Email address</label>
+        <input
+          id="hero-email"
+          class="email-form__input"
+          type="email"
+          name="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+          required
+          data-waitlist-email
+          aria-required="true"
+        />
+        <button class="email-form__submit btn btn--primary" type="submit" data-waitlist-submit>
+          Join Waitlist
+        </button>
+        <p class="hero__form-note" aria-live="polite">
+          Early access. No spam.
+        </p>
+        <div class="email-form__status" data-waitlist-status aria-live="polite" aria-atomic="true"></div>
+      </form>
+
+      <!-- Secondary CTA -->
+      <div class="hero__ctas" style="margin-top:1.25rem">
+        <a
+          href="https://github.com/alex0tico/kuyfi_tui"
+          class="btn btn--ghost"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Star Kuyfi on GitHub"
+        >
+          ★ Star on GitHub
+          <span class="github-star-count" data-github-stars hidden aria-label="stars"></span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     PROBLEM
+═══════════════════════════════════════════════════════ -->
+<section class="problem section" id="problem" aria-labelledby="problem-heading">
+  <div class="container">
+    <span class="section-label" aria-hidden="true">The problem</span>
+    <span class="section-rule" role="separator" aria-hidden="true"></span>
+
+    <h2 class="problem__lead" id="problem-heading">
+      Most tools need your <strong>source code</strong>. Kuyfi doesn't.
+    </h2>
+
+    <div class="problem__cards" role="list">
+
+      <div class="problem__card problem__card--them" role="listitem">
+        <p class="problem__card-label">Other tools</p>
+        <p class="problem__card-title">Source-code required</p>
+        <p class="problem__card-body">
+          Formal verifiers like Veridise and Certora operate on the original Rust source.
+          If you don't own the contract or lost the source, you're stuck.
+          Human auditors face the same constraint — no source, no audit.
+        </p>
+      </div>
+
+      <div class="problem__card problem__card--arrow" role="presentation" aria-hidden="true">
+        →
+      </div>
+
+      <div class="problem__card problem__card--us" role="listitem">
+        <p class="problem__card-label">Kuyfi</p>
+        <p class="problem__card-title">Deployed bytecode only</p>
+        <p class="problem__card-body">
+          Kuyfi fetches the WASM from the live contract on Testnet, decodes the
+          <code>contractspecv0</code> XDR custom section with an alignment-tolerant parser,
+          reconstructs the function interface — and starts probing. No Rust. No repo.
+        </p>
+      </div>
+
+    </div>
+
+    <blockquote class="problem__workflow">
+      <strong>Suggested workflow:</strong> Run Kuyfi → fix obvious issues →
+      submit to Veridise or Ottersec with a cleaner baseline. Arrive at the audit having
+      already eliminated surface-level vulnerabilities.
+    </blockquote>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     HOW IT WORKS
+═══════════════════════════════════════════════════════ -->
+<section class="section" id="how-it-works" aria-labelledby="how-heading">
+  <div class="container">
+    <span class="section-label" aria-hidden="true">How it works</span>
+    <span class="section-rule" role="separator" aria-hidden="true"></span>
+
+    <h2 class="problem__lead" id="how-heading" style="margin-bottom:var(--gap)">
+      Two phases. One command.
+    </h2>
+
+    <div class="how-it-works__phases">
+
+      <!-- Phase 01: OSINT Scanner -->
+      <article class="phase phase--1">
+        <details>
+          <summary class="phase__header">
+            <span class="phase__num" aria-hidden="true">01</span>
+            <div class="phase__meta">
+              <p class="phase__title">OSINT Scanner</p>
+              <p class="phase__status">● Stable</p>
+            </div>
+            <svg class="phase__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </summary>
+          <div class="phase__body">
+            <ul class="phase__step-list" aria-label="Phase 1 steps">
+              <li class="phase__step">
+                <span class="phase__step-dot" aria-hidden="true"></span>
+                Fetch WASM bytecode from any Testnet contract ID — <strong>read-only, zero transactions</strong>
+              </li>
+              <li class="phase__step">
+                <span class="phase__step-dot" aria-hidden="true"></span>
+                Decode <code>contractspecv0</code> XDR custom section with an alignment-tolerant parser
+              </li>
+              <li class="phase__step">
+                <span class="phase__step-dot" aria-hidden="true"></span>
+                Build UDT struct registry from <code>scSpecEntryUdtStructV0</code> entries
+              </li>
+              <li class="phase__step">
+                <span class="phase__step-dot" aria-hidden="true"></span>
+                Render attack surface map: function names, typed parameters, return types
+              </li>
+            </ul>
+          </div>
+        </details>
+      </article>
+
+      <!-- Phase 02: Chaos Monkey -->
+      <article class="phase phase--2">
+        <details>
+          <summary class="phase__header">
+            <span class="phase__num" aria-hidden="true">02</span>
+            <div class="phase__meta">
+              <p class="phase__title">Chaos Monkey</p>
+              <p class="phase__status">● Beta / In Testing</p>
+            </div>
+            <svg class="phase__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </summary>
+          <div class="phase__body">
+            <ul class="phase__step-list" aria-label="Phase 2 steps">
+              <li class="phase__step">
+                <span class="phase__step-dot" aria-hidden="true"></span>
+                Ephemeral keypair + Friendbot funding — <strong>keys never touch disk</strong>
+              </li>
+              <li class="phase__step">
+                <span class="phase__step-dot" aria-hidden="true"></span>
+                Math boundary vectors, one variable at a time:
+              </li>
+            </ul>
+
+            <div class="vector-grid" style="margin-left:1.5rem; margin-top:0.5rem; margin-bottom:0.75rem" aria-label="Math attack vectors">
+              <span class="vector-tag vector-tag--math">ZERO_ATTACK</span>
+              <span class="vector-tag vector-tag--math">MAX_VALUE_ATTACK</span>
+              <span class="vector-tag vector-tag--math">NEGATIVE_ATTACK</span>
+              <span class="vector-tag vector-tag--math">MIN_BOUNDARY_ATTACK</span>
+            </div>
+
+            <ul class="phase__step-list" style="margin-top:0.25rem">
+              <li class="phase__step">
+                <span class="phase__step-dot" aria-hidden="true"></span>
+                Access control vectors on admin-pattern functions:
+              </li>
+            </ul>
+
+            <div class="vector-grid" style="margin-left:1.5rem; margin-top:0.5rem; margin-bottom:0.75rem" aria-label="Access control attack vectors">
+              <span class="vector-tag vector-tag--acl">UNAUTHORIZED_CALL</span>
+              <span class="vector-tag vector-tag--acl">REINIT_ATTACK</span>
+              <span class="vector-tag vector-tag--acl">SELF_CALL_ATTACK</span>
+            </div>
+
+            <ul class="phase__step-list">
+              <li class="phase__step">
+                <span class="phase__step-dot" aria-hidden="true"></span>
+                Full on-chain execution pipeline:
+              </li>
+            </ul>
+
+            <div class="pipeline" aria-label="Transaction execution pipeline">
+              <span class="pipeline__step">simulate</span>
+              <span class="pipeline__arrow">→</span>
+              <span class="pipeline__step">assemble</span>
+              <span class="pipeline__arrow">→</span>
+              <span class="pipeline__step">sign</span>
+              <span class="pipeline__arrow">→</span>
+              <span class="pipeline__step pipeline__step--write">submit</span>
+              <span class="pipeline__arrow">→</span>
+              <span class="pipeline__step">poll</span>
+            </div>
+
+            <ul class="phase__step-list" style="margin-top:0.75rem">
+              <li class="phase__step">
+                <span class="phase__step-dot" aria-hidden="true"></span>
+                Terminal report with severities <code>CRITICAL / HIGH / MEDIUM / LOW / INFO</code>
+                and sequential finding IDs (KYF-001, KYF-002…)
+              </li>
+            </ul>
+          </div>
+        </details>
+      </article>
+
+    </div>
+
+    <!-- Phase 3 teaser -->
+    <div style="margin-top:1.5rem; border:1px solid var(--border); border-radius:2px; padding:1.5rem 2rem; background:var(--bg-surface)">
+      <p class="section-label" style="margin-bottom:0.5rem">03 · Planned</p>
+      <p style="font-size:var(--text-sm); color:var(--fg-muted)">
+        PDF &amp; JSON audit reports · CI/CD pipeline integration ·
+        Multi-contract batch scanning · Monitoring dashboard ·
+        <strong style="color:var(--fg)">kuyfi.io</strong> SaaS platform
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     PROOF
+═══════════════════════════════════════════════════════ -->
+<section class="proof section" id="proof" aria-labelledby="proof-heading">
+  <div class="container">
+    <span class="section-label" aria-hidden="true">Proof</span>
+    <span class="section-rule" role="separator" aria-hidden="true"></span>
+
+    <div class="proof__case">
+
+      <div>
+        <p class="proof__label">Case study</p>
+
+        <!-- TODO: verify & source before publishing —
+             "Hoops" contract name, "15 functions / 21KB", and "$3M+ SDF audits"
+             were provided by the team, not found in current repo docs. -->
+        <h2 class="proof__case-title" id="proof-heading">
+          Hoops — passkey smart wallet
+        </h2>
+
+        <div class="proof__stats" aria-label="Scan statistics">
+          <div class="proof__stat">
+            <span class="proof__stat-value">15</span>
+            <span class="proof__stat-label">Functions extracted</span>
+          </div>
+          <div class="proof__stat">
+            <span class="proof__stat-value">21 KB</span>
+            <span class="proof__stat-label">WASM size</span>
+          </div>
+          <div class="proof__stat">
+            <span class="proof__stat-value">0</span>
+            <span class="proof__stat-label">Source files needed</span>
+          </div>
+        </div>
+
+        <p class="proof__body">
+          Kuyfi loaded the Hoops passkey wallet contract directly from Stellar Testnet,
+          decoded its <code>contractspecv0</code> section, reconstructed the full function
+          interface, and ran math boundary and access control vectors against every
+          admin-pattern entry point — no Rust repository involved.
+        </p>
+
+        <!-- TODO: verify & source before publishing — "$3M+ in SDF audits" figure -->
+        <p class="proof__body" style="margin-top:0.75rem">
+          The Soroban Audit Bank has committed over <strong>$3M+</strong> to smart contract
+          security engagements. Kuyfi is the triage layer that helps developers arrive at
+          those audits with a cleaner baseline.
+        </p>
+
+        <p class="proof__todo" role="note">
+          TODO: verify & source "Hoops" case details and "$3M+ SDF audits" figure
+          before publishing. Provided by team, not in current repo docs.
+        </p>
+      </div>
+
+      <div>
+        <!-- Terminal report mock — representative output, not a live scan -->
+        <div class="terminal-report" aria-label="Example Kuyfi report output">
+          <div class="terminal-report__bar">
+            <span class="terminal-report__title">KUYFI REPORT · Hoops · Testnet</span>
+            <span class="terminal-report__badge">2 CRITICAL</span>
+          </div>
+          <div class="terminal-report__body" role="list">
+            <div class="terminal-line" role="listitem">
+              <span class="terminal-line__id">KYF-001</span>
+              <span class="terminal-line__sev terminal-line__sev--critical">CRITICAL</span>
+              <span class="terminal-line__msg"><strong>initialize</strong> · REINIT_ATTACK — call succeeded</span>
+            </div>
+            <div class="terminal-line" role="listitem">
+              <span class="terminal-line__id">KYF-002</span>
+              <span class="terminal-line__sev terminal-line__sev--critical">CRITICAL</span>
+              <span class="terminal-line__msg"><strong>set_admin</strong> · SELF_CALL_ATTACK — call succeeded</span>
+            </div>
+            <div class="terminal-line" role="listitem">
+              <span class="terminal-line__id">KYF-003</span>
+              <span class="terminal-line__sev terminal-line__sev--high">HIGH</span>
+              <span class="terminal-line__msg"><strong>deposit</strong> · MAX_VALUE_ATTACK — WASM panic</span>
+            </div>
+            <div class="terminal-line" role="listitem">
+              <span class="terminal-line__id">KYF-004</span>
+              <span class="terminal-line__sev terminal-line__sev--medium">MEDIUM</span>
+              <span class="terminal-line__msg"><strong>withdraw</strong> · ZERO_ATTACK · Error(Storage,)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screenshot slot — replace with actual screenshot before publishing -->
+        <div class="proof__screenshot-slot" style="margin-top:1rem" role="img" aria-label="Screenshot placeholder">
+          <!-- TODO: insert actual scanner screenshot here -->
+          [ Screenshot of live TUI scan — add before publishing ]
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     WHY STELLAR / WHY NOW
+═══════════════════════════════════════════════════════ -->
+<section class="section" id="why-stellar" aria-labelledby="why-heading">
+  <div class="container">
+    <span class="section-label" aria-hidden="true">Why Stellar · Why now</span>
+    <span class="section-rule" role="separator" aria-hidden="true"></span>
+
+    <h2 class="why-stellar__lead" id="why-heading">
+      The first production smart contract platform on Stellar needs a security-first toolchain.
+    </h2>
+
+    <div class="why-stellar__grid" role="list">
+
+      <div class="why-card" role="listitem">
+        <div class="why-card__icon" aria-hidden="true">[WASM]</div>
+        <h3 class="why-card__title">Soroban is WASM-native</h3>
+        <p class="why-card__body">
+          Every deployed Soroban contract is a WASM binary on-chain, with its interface
+          encoded in the <code>contractspecv0</code> custom section. Kuyfi reads exactly that —
+          no source needed.
+        </p>
+      </div>
+
+      <div class="why-card" role="listitem">
+        <div class="why-card__icon" aria-hidden="true">[GAP]</div>
+        <h3 class="why-card__title">The audit gap</h3>
+        <p class="why-card__body">
+          Veridise, Ottersec, and CoinFabrik deliver rigorous human audits — but they require
+          source code and significant budget. Kuyfi is the automated, CLI-native triage layer
+          that runs <em>before</em> formal review.
+        </p>
+      </div>
+
+      <div class="why-card" role="listitem">
+        <div class="why-card__icon" aria-hidden="true">[NOW]</div>
+        <h3 class="why-card__title">Early-ecosystem window</h3>
+        <p class="why-card__body">
+          Soroban DeFi protocols are deploying now. The tooling for black-box inspection
+          of deployed contracts didn't exist before Kuyfi. This is the right time to build
+          the security baseline.
+        </p>
+      </div>
+
+      <div class="why-card" role="listitem">
+        <div class="why-card__icon" aria-hidden="true">[CLI]</div>
+        <h3 class="why-card__title">Profile it like a closed binary</h3>
+        <p class="why-card__body">
+          Kuyfi brings the black-box mindset of binary security research to Soroban:
+          fetch, decode, map, fuzz — all from the deployed artifact, the way an
+          attacker would approach it.
+        </p>
+      </div>
+
+    </div>
+
+    <p class="why-stellar__disclaimer">
+      Kuyfi runs entirely on Stellar Testnet and is built with the official
+      <code>@stellar/stellar-sdk</code>.<br>
+      It is <strong>not affiliated with the Stellar Development Foundation</strong>.
+      Testnet only. MIT. v0.0.0.
+    </p>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     OPEN-CORE
+═══════════════════════════════════════════════════════ -->
+<section class="open-core section" id="open-core" aria-labelledby="opencore-heading">
+  <div class="container">
+    <span class="section-label" aria-hidden="true">Open-core model</span>
+    <span class="section-rule" role="separator" aria-hidden="true"></span>
+
+    <h2 class="problem__lead" id="opencore-heading" style="margin-bottom:var(--gap)">
+      Free at the core. Sustainable at scale.
+    </h2>
+
+    <div class="open-core__split">
+
+      <div class="open-core__block open-core__block--free">
+        <p class="open-core__block-label">Free forever</p>
+        <h3 class="open-core__block-title">The Kuyfi engine</h3>
+        <ul class="open-core__list" aria-label="Free features">
+          <li class="open-core__item">
+            <span class="open-core__item-icon" aria-hidden="true">✓</span>
+            OSINT Scanner — WASM fetch, XDR decode, attack surface map
+          </li>
+          <li class="open-core__item">
+            <span class="open-core__item-icon" aria-hidden="true">✓</span>
+            Chaos Monkey — math boundary + access control fuzzer
+          </li>
+          <li class="open-core__item">
+            <span class="open-core__item-icon" aria-hidden="true">✓</span>
+            Terminal TUI — keyboard-driven, no GUI required
+          </li>
+          <li class="open-core__item">
+            <span class="open-core__item-icon" aria-hidden="true">✓</span>
+            Full source on GitHub
+          </li>
+        </ul>
+        <div class="open-core__license">
+          <span class="open-core__license-badge">MIT</span>
+          Open source license
+        </div>
+      </div>
+
+      <div class="open-core__block open-core__block--paid">
+        <p class="open-core__block-label">Planned paid tiers</p>
+        <h3 class="open-core__block-title">kuyfi.io</h3>
+        <ul class="open-core__list" aria-label="Planned paid features">
+          <li class="open-core__item">
+            <span class="open-core__item-icon" aria-hidden="true">→</span>
+            PDF &amp; JSON audit reports
+          </li>
+          <li class="open-core__item">
+            <span class="open-core__item-icon" aria-hidden="true">→</span>
+            CI/CD pipeline integration
+          </li>
+          <li class="open-core__item">
+            <span class="open-core__item-icon" aria-hidden="true">→</span>
+            Multi-contract batch scanning
+          </li>
+          <li class="open-core__item">
+            <span class="open-core__item-icon" aria-hidden="true">→</span>
+            Monitoring dashboard — track findings over time
+          </li>
+          <li class="open-core__item">
+            <span class="open-core__item-icon" aria-hidden="true">→</span>
+            Hosted scanning &amp; report delivery (SaaS)
+          </li>
+        </ul>
+        <p style="margin-top:1.25rem; font-size:var(--text-xs); color:var(--fg-muted); font-family:var(--font-mono)">
+          Revenue from paid tiers funds continued development of the free core.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     FINAL CTA / WAITLIST
+═══════════════════════════════════════════════════════ -->
+<section class="section waitlist" id="waitlist" aria-labelledby="waitlist-heading">
+  <div class="container">
+    <span class="section-label" aria-hidden="true">Early access</span>
+    <span class="section-rule" role="separator" aria-hidden="true"></span>
+
+    <h2 class="waitlist__headline" id="waitlist-heading">
+      Be first when <em>Phase 3</em> ships.
+    </h2>
+    <p class="waitlist__sub">
+      Get notified when PDF reports, CI/CD integration, and the kuyfi.io platform go live.
+      No spam. Unsubscribe any time.
+    </p>
+
+    <form class="email-form" data-waitlist-form aria-label="Waitlist signup">
+      <label for="waitlist-email" class="visually-hidden">Email address</label>
+      <input
+        id="waitlist-email"
+        class="email-form__input"
+        type="email"
+        name="email"
+        placeholder="you@example.com"
+        autocomplete="email"
+        required
+        data-waitlist-email
+        aria-required="true"
+      />
+      <button class="email-form__submit" type="submit" data-waitlist-submit>
+        Join Waitlist
+      </button>
+      <div class="email-form__status" data-waitlist-status aria-live="polite" aria-atomic="true"></div>
+    </form>
+
+    <div class="waitlist__ctas">
+      <a
+        href="https://github.com/alex0tico/kuyfi_tui"
+        class="btn btn--ghost"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Star Kuyfi on GitHub"
+      >
+        ★ Star on GitHub
+        <span class="github-star-count" data-github-stars hidden aria-label="stars"></span>
+      </a>
+    </div>
+
+  </div>
+</section>
+</main>
+
+<!-- ═══════════════════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════════════════ -->
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer__inner">
+
+      <div class="footer__brand">
+        <a href="#" class="footer__logo" aria-label="Kuyfi home">
+          <svg class="footer__logo-icon" viewBox="0 0 1080 1080" aria-hidden="true">
+            <use href="#fox-prowler"/>
+          </svg>
+          <span class="footer__wordmark">Kuyfi</span>
+        </a>
+        <p class="footer__tagline">
+          Native black-box security for Soroban.<br>
+          MIT · Testnet only · Not affiliated with SDF.
+        </p>
+      </div>
+
+      <nav class="footer__links" aria-label="Footer links">
+
+        <div class="footer__link-group">
+          <p class="footer__link-group-label">Project</p>
+          <a
+            href="https://github.com/alex0tico/kuyfi_tui"
+            class="footer__link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >GitHub</a>
+          <!-- TODO: replace with actual npm link if/when published to npm -->
+          <a
+            href="https://github.com/alex0tico/kuyfi_tui/blob/main/readme.md"
+            class="footer__link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Documentation</a>
+          <a
+            href="https://github.com/alex0tico/kuyfi_tui/blob/main/ROADMAP.md"
+            class="footer__link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Roadmap</a>
+        </div>
+
+        <div class="footer__link-group">
+          <p class="footer__link-group-label">Connect</p>
+          <!-- TODO: replace with actual deck URL -->
+          <a href="#" class="footer__link">Deck (coming soon)</a>
+          <!-- TODO: replace with actual X/Twitter handle -->
+          <a
+            href="#"
+            class="footer__link"
+            aria-label="Kuyfi on X (Twitter) — link coming soon"
+          >X / Twitter (coming soon)</a>
+          <a href="#waitlist" class="footer__link">Waitlist</a>
+        </div>
+
+        <div class="footer__link-group">
+          <p class="footer__link-group-label">Legal</p>
+          <a
+            href="https://github.com/alex0tico/kuyfi_tui/blob/main/LICENSE"
+            class="footer__link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >MIT License</a>
+          <a
+            href="https://github.com/alex0tico/kuyfi_tui/blob/main/CONTRIBUTING.md"
+            class="footer__link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Contributing</a>
+        </div>
+
+      </nav>
+
+    </div>
+
+    <div class="footer__bottom">
+      <p class="footer__legal">
+        © 2025 Kuyfi. MIT License.<br>
+        Not affiliated with the Stellar Development Foundation.
+        Testnet use only — never against Mainnet contracts without authorization.
+      </p>
+      <div class="footer__version" aria-label="Version information">
+        <span class="footer__tag">v0.0.0</span>
+        <span class="footer__tag">Testnet</span>
+        <span class="footer__tag">MIT</span>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+
+</body>
+</html>
